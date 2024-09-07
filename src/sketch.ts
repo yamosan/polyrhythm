@@ -145,7 +145,7 @@ class Polygon {
     }
 
     const timePerEdge = 1 / this.div;
-    const edgeIndex = Math.floor(progress / timePerEdge);
+    const edgeIndex = Math.floor(progress / timePerEdge) % this.div;
     const localT = (progress % timePerEdge) / timePerEdge;
 
     const vertices = this.calculatePolygonVertices();

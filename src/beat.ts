@@ -1,21 +1,16 @@
-import { getTransport, Sequence } from "tone";
-import { range } from "./util";
+import { getTransport } from "tone";
 
 // tone から export されていないため定義
 type Transport = ReturnType<typeof getTransport>;
 
 export class Beat {
   private transport: Transport;
-  private sequence: Sequence;
 
   constructor(bpm: number) {
     this.transport = getTransport();
     this.transport.bpm.value = bpm;
-    this.sequence = new Sequence({
-      callback: () => {},
-      events: range(4),
-      subdivision: "4n",
-    });
+    this.transport.loop = true;
+    this.transport.setLoopPoints(0, "1m"); // 1小節でループ
   }
 
   public get bpm() {
@@ -26,8 +21,8 @@ export class Beat {
   }
 
   public get progress() {
-    // FIXME: transport.progress が 0のままなので
-    return this.sequence.progress;
+    // 1以上を返すことがあるため補正
+    return Math.min(Math.max(this.transport.progress, 0), 1);
   }
 
   public get active() {
@@ -35,7 +30,6 @@ export class Beat {
   }
 
   public start() {
-    this.sequence.start();
     this.transport.start();
   }
 
