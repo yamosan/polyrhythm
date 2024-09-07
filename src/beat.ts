@@ -26,6 +26,7 @@ export class Beat {
   }
 
   public get progress() {
+    // FIXME: transport.progress が 0のままなので
     return this.sequence.progress;
   }
 
