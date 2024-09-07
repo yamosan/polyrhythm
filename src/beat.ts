@@ -29,21 +29,20 @@ export class Beat {
     return this.sequence.progress;
   }
 
+  public get active() {
+    return this.transport.state === "started";
+  }
+
   public start() {
-    if (this.transport.state !== "started") {
-      this.transport.start();
-    }
-    if (this.sequence.state !== "started") {
-      this.sequence.start();
-    }
+    this.sequence.start();
+    this.transport.start();
   }
 
   public stop() {
-    if (this.transport.state === "started") {
-      this.transport.stop();
-    }
-    if (this.sequence.state === "started") {
-      this.sequence.stop();
-    }
+    this.transport.stop();
+  }
+
+  public pause() {
+    this.transport.pause();
   }
 }

@@ -3,6 +3,7 @@ import { lcm } from "./util";
 import { Beat } from "./beat";
 import { Rhythm } from "./rhythm";
 import Color from "colorjs.io";
+import { getContext } from "tone";
 
 export function sketch(p: p5) {
   const subdivision = [4, 3];
@@ -15,6 +16,7 @@ export function sketch(p: p5) {
     new Color("sRGB", [70, 83, 98]),
   ];
 
+  let initializedInstruments = false;
   let circle: Circle;
   let polygons: Polygon[];
   let beat: Beat;
@@ -27,7 +29,7 @@ export function sketch(p: p5) {
   };
 
   p.draw = () => {
-    const progress = beat.progress;
+    const progress = initializedInstruments ? beat.progress : 0;
     p.background(0);
     p.fill(255);
 
@@ -44,9 +46,21 @@ export function sketch(p: p5) {
     initObjects();
   };
 
+  p.mousePressed = async () => {
+    if (!initializedInstruments) {
+      await initInstruments();
+      initializedInstruments = true;
+    }
+
+    if (beat.active) {
+      beat.pause();
+    } else {
+      beat.start();
+    }
+  };
+
   function init() {
     initObjects();
-    initInstruments();
   }
 
   function initObjects() {
@@ -58,10 +72,15 @@ export function sketch(p: p5) {
     circle = new Circle(p, center.x, center.y, rad, lcm(...subdivision));
   }
 
-  function initInstruments() {
+  async function initInstruments() {
+    const context = getContext();
+    if (context.state !== "running") {
+      await context.resume();
+    }
     beat = new Beat(120);
-    beat.start();
     rhythms = subdivision.map((d, i) => new Rhythm(d, notes[i]));
+
+    beat.start();
     rhythms.forEach((r) => r.start());
   }
 }

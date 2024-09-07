@@ -21,6 +21,7 @@ export class Rhythm {
         release: 1.7,
       },
     });
+
     this.sequence = new Sequence({
       callback: (time) => {
         this.synth.triggerAttackRelease(this.note, "16n", time);
@@ -30,19 +31,19 @@ export class Rhythm {
     });
   }
 
-  public get progress() {
-    return this.sequence.progress;
+  public get muted() {
+    return this.sequence.mute;
   }
 
   public start() {
-    if (this.sequence.state !== "started") {
-      this.sequence.start();
-    }
+    this.sequence.start();
   }
 
-  public stop() {
-    if (this.sequence.state === "started") {
-      this.sequence.stop();
-    }
+  public mute() {
+    this.sequence.mute = true;
+  }
+
+  public unmute() {
+    this.sequence.mute = false;
   }
 }
